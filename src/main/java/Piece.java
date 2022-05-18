@@ -6,22 +6,13 @@ public class Piece {
 
 
     String name;
-    Integer vertical;
-    Integer horizontal;
-    Integer diagonal;
-    Boolean l; //for knight
     Boolean colour; //t = white, f = black
     ImageIcon pieceIcon;
 
-    public Piece(String name, Integer vertical, Integer horizontal, Integer diagonal, Boolean l,
-                 Boolean colour, ImageIcon pieceIcon){
+    public Piece(String name, Boolean colour, ImageIcon pieceIcon){
 
         this.name = name;
-        this.vertical = vertical;
-        this.horizontal = horizontal;
-        this.diagonal = diagonal;
         this.colour = colour;
-        this.l = l;
         this.pieceIcon = pieceIcon;
 
     }
