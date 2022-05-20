@@ -3,7 +3,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.Timer;
-import javax.swing.border.Border;
 
 public class ChessBoard extends JFrame {
 
@@ -12,7 +11,7 @@ public class ChessBoard extends JFrame {
     ActionListener actionListener = new TestActionListener();
 
     ImageIcon dot = new ImageIcon("dot_PNG29.png");
-    Integer wKingY = 7;
+    Integer wKingY = 7; //позиции короля
     Integer wKingX = 4;
     Integer bKingY = 7;
     Integer bKingX = 4;
@@ -21,12 +20,9 @@ public class ChessBoard extends JFrame {
     Integer bTime = 1200;
     JLabel label = new JLabel("...");
 
-
-
-
     public ChessBoard() {
 
-        JFrame choseFrame = new JFrame();
+        JFrame choseFrame = new JFrame(); //панель для получения кода расположения фигур
         JLabel enterTheFen =  new JLabel("Enter the FEN");
         JButton submitFEN = new JButton("Submit");
         JTextField textFEN = new JTextField(64);
@@ -53,7 +49,7 @@ public class ChessBoard extends JFrame {
     }
 
 
-    void startGame() {
+    void startGame() { //создание окна игры, расстановка фигур
 
             JFrame chessBoard = new JFrame();
             chessBoard.setSize(1000, 1000);
@@ -111,7 +107,7 @@ public class ChessBoard extends JFrame {
 
 
 
-    void FEN(String s) {
+    void FEN(String s) { //обработка кода расположения фигур
         int y = 0;
         int x;
         String[] symbols = s.split("/");
@@ -149,7 +145,7 @@ public class ChessBoard extends JFrame {
     }
 
 
-    void DefColours() {
+    void DefColours() { //исправление цветов
 
         boolean t = false;
         for (int y = 0; y < 8; y++) {
@@ -173,17 +169,15 @@ public class ChessBoard extends JFrame {
         public Integer moveY;
         public Integer moveX;
 
-        public void actionPerformed(ActionEvent e) {
+        public void actionPerformed(ActionEvent e) { //обработка кнопок
             JButton o = (JButton) e.getSource();
             int y = 1;
             int x = 1;
-            for (int i = 0; i < 8; i++) {
+            for (int i = 0; i < 8; i++) { //поиск нажатой кнопки
                 for (int i1 = 0; i1 < 8; i1++) {
                     if (buttons[i][i1] == o) {
                         y = i;
-
                         x = i1;
-
                     }
                 }
             }
@@ -212,7 +206,7 @@ public class ChessBoard extends JFrame {
     }
 
 
-    boolean endGame() {
+    boolean endGame() { //возвращает истину, когда нет доступных ходов
         for (int y = 0; y < 8; y++) {
             for (int x = 0; x < 8; x++) {
                 if (pieces[y][x] != null && pieces[y][x].colour == colour) {
@@ -245,7 +239,7 @@ public class ChessBoard extends JFrame {
     }
 
 
-    void pawnMove(int y, int x) {
+    void pawnMove(int y, int x) { //просчет атаки пешки
         if (include(y - 1, x - 1)) {
             if (pieces[y - 1][x - 1] != null && checkShah(y, x, y - 1, x - 1) && pieces[y - 1][x - 1].colour != pieces[y][x].colour)
                 buttons[y - 1][x - 1].setBackground(Color.red);
@@ -262,7 +256,7 @@ public class ChessBoard extends JFrame {
     }
 
 
-    void rookMove(int y, int x) {
+    void rookMove(int y, int x) { // просчет атаки ладьи
         checkLong(y, x, 1, 0);
         checkLong(y, x, -1, 0);
         checkLong(y, x, 0, 1);
@@ -270,7 +264,7 @@ public class ChessBoard extends JFrame {
 
     }
 
-    void knightMove(int y, int x) {
+    void knightMove(int y, int x) { // просчет атаки коня
         CheckKnight(y, x, 2, 1);
         CheckKnight(y, x, 2, -1);
         CheckKnight(y, x, -2, 1);
@@ -282,7 +276,7 @@ public class ChessBoard extends JFrame {
 
     }
 
-    void bishopMove(int y, int x) {
+    void bishopMove(int y, int x) {  // просчет атаки слона
         checkLong(y, x, 1, 1);
         checkLong(y, x, 1, -1);
         checkLong(y, x, -1, 1);
@@ -291,7 +285,7 @@ public class ChessBoard extends JFrame {
     }
 
 
-    void CheckKnight(int y, int x, int y1, int x1) {
+    void CheckKnight(int y, int x, int y1, int x1) { //шаблон атаки коня
 
         if (include(y + y1, x + x1) && empty(y + y1, x + x1) && checkShah(y, x, y + y1, x + x1))
             buttons[y + y1][x + x1].setIcon(dot);
@@ -310,7 +304,7 @@ public class ChessBoard extends JFrame {
         checkLong(y, x, 0, -1);
     }
 
-    void Move(int moveY, int moveX, int y, int x) {
+    void Move(int moveY, int moveX, int y, int x) { //смена хода
         if (pieces[moveY][moveX].name.equals("king")) {
             if (x == moveX + 2) {
                 System.out.println(x);
@@ -360,7 +354,7 @@ public class ChessBoard extends JFrame {
     }
 
 
-    Boolean checkShah(int y, int x, int y1, int x1) {
+    Boolean checkShah(int y, int x, int y1, int x1) { // шах после хода
 
         Piece piece = pieces[y][x];
         Piece piece1 = null;
@@ -382,7 +376,7 @@ public class ChessBoard extends JFrame {
         return r;
     }
 
-    void checkLong(int y, int x, int y1, int x1) {
+    void checkLong(int y, int x, int y1, int x1) { //просчет возможности хода по вертикали, горизонтали, диагонали
 
         for (int i = 1; i <= 7; i++) {
             if (!include(y + i * y1, x + i * x1)) break;
@@ -398,7 +392,7 @@ public class ChessBoard extends JFrame {
 
     }
 
-    void mirror() {
+    void mirror() { //разворот доски
         for (int y = 4; y < 8; y++) {
             for (int x = 0; x < 8; x++) {
                 ImageIcon temp = (ImageIcon) buttons[y][x].getIcon();
@@ -412,7 +406,7 @@ public class ChessBoard extends JFrame {
     }
 
 
-    void clearDots() {
+    void clearDots() { //удаление кругов хода
         for (int y = 0; y < 8; y++) {
             for (int x = 0; x < 8; x++) {
                 if (buttons[y][x].getIcon() == dot) buttons[y][x].setIcon(null);
@@ -421,7 +415,7 @@ public class ChessBoard extends JFrame {
     }
 
 
-    void kingCheckMove(int y, int x, int y1, int x1, Boolean color) {
+    void kingCheckMove(int y, int x, int y1, int x1, Boolean color) { //шаблон для хода короля
         int i = 1;
         if (include(y + i * y1, x + i * x1)) {
             if ((empty(y + i * y1, x + i * x1)) && checkKing(y + i * y1, x + i * x1, color))
@@ -434,8 +428,8 @@ public class ChessBoard extends JFrame {
     }
 
 
-    void kingMove(int y, int x) {
-        if (pieces[y][x].fistMove && !empty(7, 0) && empty(7, 1) && empty(7, 3) && pieces[7][0].name.equals("rook") && pieces[7][0].fistMove) {
+    void kingMove(int y, int x) { //обработка хода короля
+        if (pieces[y][x].fistMove && !empty(7, 0) && empty(7, 1) && empty(7, 3) && pieces[7][0].name.equals("rook") && pieces[7][0].fistMove) { //обработка рокировки
             kingCheckMove(y, x, 0, -2, colour);
         }
 
@@ -454,8 +448,7 @@ public class ChessBoard extends JFrame {
     }
 
 
-    Boolean checkKing(int y, int x, Boolean color) {
-
+    Boolean checkKing(int y, int x, Boolean color) { //проверка на шах
 
         if (!stop(y, x, 1, 1, "bishop", color)) return false;
         if (!stop(y, x, 1, -1, "bishop", color)) return false;
@@ -494,13 +487,13 @@ public class ChessBoard extends JFrame {
     }
 
 
-    Boolean shortStop(int y, int x, int y1, int x1, String p, Boolean color) {
+    Boolean shortStop(int y, int x, int y1, int x1, String p, Boolean color) { //шаблон для проверки коротких атак
         int i = 1;
         return !include(y + i * y1, x + i * x1) || empty(y + i * y1, x + i * x1) || color == pieces[y + i * y1][x + i * x1].colour || !pieces[y + i * y1][x + i * x1].name.equals(p);
     }
 
 
-    Boolean stop(int y, int x, int y1, int x1, String p, Boolean color) {
+    Boolean stop(int y, int x, int y1, int x1, String p, Boolean color) { //шаблон для проверки длинных атак
         for (int i = 1; i <= 7; i++) { // y+
             if (!include(y + i * y1, x + i * x1)) break;
             if (!empty(y + i * y1, x + i * x1)) {
@@ -513,11 +506,11 @@ public class ChessBoard extends JFrame {
         return true;
     }
 
-    Boolean empty(int y, int x) {
+    Boolean empty(int y, int x) { //наличие фигуры
         return (pieces[y][x] == null);
     }
 
-    Boolean include(int y, int x) {
+    Boolean include(int y, int x) { //существование поля
         return !(y > 7 || y < 0 || x > 7 || x < 0);
     }
 
