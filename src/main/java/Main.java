@@ -4,8 +4,6 @@ public class Main {
 
        ChessBoard chessBoard = new ChessBoard();
 
-
-       // new Countdown Countdown();
     }
 
 }
