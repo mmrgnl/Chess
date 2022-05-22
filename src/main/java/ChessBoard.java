@@ -25,8 +25,8 @@ public class ChessBoard extends JFrame {
         JLabel enterTheFen =  new JLabel("Enter the FEN");
         JButton submitFEN = new JButton("Submit");
         JTextField textFEN = new JTextField(64);
-
-        submitFEN.addActionListener(e -> {
+        textFEN.setHorizontalAlignment(JTextField.CENTER);
+        submitFEN.addActionListener(e -> { //для стандартной расстановки rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
             FEN(textFEN.getText());
             System.out.println(textFEN.getText());
             startGame();
@@ -42,7 +42,7 @@ public class ChessBoard extends JFrame {
         choseFrame.setIconImage(icon.getImage());
         choseFrame.setLayout(new BorderLayout(20,0));
         choseFrame.add(p,BorderLayout.CENTER );
-        choseFrame.setSize(500, 500);
+        choseFrame.setSize(500, 300);
         choseFrame.setVisible(true);
 
     }
@@ -61,7 +61,7 @@ public class ChessBoard extends JFrame {
 
         JPanel timer = new JPanel();
         timer.setSize(525, 100);
-        Timer wTimer = new Timer(1000, e -> { //для стандартной расстановки rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
+        Timer wTimer = new Timer(1000, e -> {
             if (colour) {
                 if (wTime > 0) {
                     wTime--;
