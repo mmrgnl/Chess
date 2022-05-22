@@ -24,13 +24,12 @@ public class Chess extends JFrame {
         JFrame choseFrame = new JFrame(); //панель для получения кода расположения фигур
         JLabel enterTheFen =  new JLabel("Enter the FEN");
         JButton submitFEN = new JButton("Submit");
-        JTextField textFEN = new JTextField(64);
+        JTextField textFEN = new JTextField(50);
         textFEN.setHorizontalAlignment(JTextField.CENTER);
         submitFEN.addActionListener(e -> { //для стандартной расстановки rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
             FEN(textFEN.getText());
-            System.out.println(textFEN.getText());
             startGame();
-            choseFrame.dispose();
+            choseFrame.setVisible(false);
 
         });
         JPanel p = new JPanel();
@@ -42,7 +41,7 @@ public class Chess extends JFrame {
         choseFrame.setIconImage(icon.getImage());
         choseFrame.setLayout(new BorderLayout(20,0));
         choseFrame.add(p,BorderLayout.CENTER );
-        choseFrame.setSize(500, 300);
+        choseFrame.setSize(700, 300);
         choseFrame.setVisible(true);
 
     }
