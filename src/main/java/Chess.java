@@ -3,7 +3,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.Timer;
-public class ChessBoard extends JFrame {
+public class Chess extends JFrame {
 
     static Piece[][] pieces = new Piece[8][8];
     static JButton[][] buttons = new JButton[8][8];
@@ -19,7 +19,7 @@ public class ChessBoard extends JFrame {
     static Integer bTime = 1200;
     static JLabel label = new JLabel("...");
 
-    public ChessBoard() {
+    public Chess() {
 
         JFrame choseFrame = new JFrame(); //панель для получения кода расположения фигур
         JLabel enterTheFen =  new JLabel("Enter the FEN");
