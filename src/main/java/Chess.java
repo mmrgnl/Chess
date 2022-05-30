@@ -10,13 +10,14 @@ public class Chess extends JFrame {
     static ActionListener actionListener = new TestActionListener();
 
     static ImageIcon dot = new ImageIcon("dot_PNG29.png");
-    static Integer wKingY = 7; //позиции короля
-    static Integer wKingX = 4;
-    static Integer bKingY = 7;
-    static Integer bKingX = 4;
-    static Boolean colour = true;  //t = white, f = black
-    static Integer wTime = 1200;
-    static Integer bTime = 1200;
+    static int wKingY; //позиции короля
+    static int wKingX;
+    static int bKingY;
+    static int bKingX;
+    static boolean colour = true;//t = white, f = black
+    static boolean mirrors;
+    static int wTime = 1200;
+    static int bTime = 1200;
     static JLabel label = new JLabel("...");
 
     public Chess() {
@@ -26,16 +27,22 @@ public class Chess extends JFrame {
         JButton submitFEN = new JButton("Submit");
         JTextField textFEN = new JTextField(50);
         textFEN.setHorizontalAlignment(JTextField.CENTER);
+        JCheckBox checkBox = new JCheckBox();
+        checkBox.setText("Mirror");
         submitFEN.addActionListener(e -> { //для стандартной расстановки rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
             FEN(textFEN.getText());
+            if (textFEN.getText().equals("")) FEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
             startGame();
             choseFrame.setVisible(false);
-
+            mirrors = checkBox.isSelected();
         });
+
+
         JPanel p = new JPanel();
         p.add(textFEN);
         p.add(submitFEN);
         p.add(enterTheFen);
+        p.add(checkBox);
         ImageIcon icon = new ImageIcon("1728594.png");
         choseFrame.setTitle("Chose");
         choseFrame.setIconImage(icon.getImage());
@@ -68,7 +75,6 @@ public class Chess extends JFrame {
                 } else System.out.println("Black wins");
             } else {
                 if (bTime > 0) {
-
                     bTime--;
                     label.setText(bTime / 60 + ":" + bTime % 60);
                 } else System.out.println("White wins");
@@ -124,8 +130,12 @@ public class Chess extends JFrame {
                                 new ImageIcon("bishopB.png"));
                         case ('q') -> pieces[y][x1] = new Piece("queen", false, null,
                                 new ImageIcon("queenB.png"));
-                        case ('k') -> pieces[y][x1] = new Piece("king", false, true,
-                                new ImageIcon("kingB.png"));
+                        case ('k') -> {
+                            pieces[y][x1] = new Piece("king", false, true,
+                                    new ImageIcon("kingB.png"));
+                            bKingY = y;
+                            bKingX = x1;
+                        }
                         case ('P') -> pieces[y][x1] = new Piece("pawn", true, true,
                                 new ImageIcon("pawnW.png"));
                         case ('R') -> pieces[y][x1] = new Piece("rook", true, true,
@@ -136,8 +146,12 @@ public class Chess extends JFrame {
                                 new ImageIcon("bishopW.png"));
                         case ('Q') -> pieces[y][x1] = new Piece("queen", true, null,
                                 new ImageIcon("queenW.png"));
-                        case ('K') -> pieces[y][x1] = new Piece("king", true, true,
-                                new ImageIcon("kingW.png"));
+                        case ('K') -> {
+                            pieces[y][x1] = new Piece("king", true, true,
+                                    new ImageIcon("kingW.png"));
+                            wKingY = y;
+                            wKingX = x1;
+                        }
                         case ('2') -> x1 = x1 + 1;
                         case ('3') -> x1 = x1 + 2;
                         case ('4') -> x1 = x1 + 3;
@@ -154,8 +168,7 @@ public class Chess extends JFrame {
         }
     }
 
-
-    static void DefColours() { //исправление цветов
+    static void defColours() { //исправление цветов
         boolean t = false;
         for (int y = 0; y < 8; y++) {
             t = !t;
@@ -170,11 +183,11 @@ public class Chess extends JFrame {
             }
         }
 
+
     }
 
-    static Boolean moveReady = false;
-    static Integer moveY;
-    static Integer moveX;
+    static int moveY;
+    static int moveX;
 
     static class TestActionListener implements ActionListener {
         public void actionPerformed(ActionEvent e) { //обработка кнопок
@@ -192,15 +205,17 @@ public class Chess extends JFrame {
     }
 
     static void actionMove(int y, int x) {
-        if (buttons[y][x].getBackground() == Color.red || (moveReady && buttons[y][x].getIcon() == dot)) {
+        if (buttons[y][x].getBackground() == Color.red || ( buttons[y][x].getIcon() == dot)) {
             move(moveY, moveX, y, x);
         }
-        if (moveReady && buttons[y][x].getIcon() != dot) {
-            moveReady = false;
+        if (buttons[y][x].getIcon() != dot) {
             clearDots();
-            DefColours();
+           defColours();
         }
         if (pieces[y][x] != null && colour == pieces[y][x].colour) {
+
+            //System.out.println(pieces[y][x].colour);
+
             switch (pieces[y][x].name) {
                 case "pawn" -> pawnMove(y, x);
                 case "rook" -> rookMove(y, x);
@@ -209,7 +224,6 @@ public class Chess extends JFrame {
                 case "queen" -> queenMove(y, x);
                 case "king" -> kingMove(y, x);
             }
-            moveReady = true;
             moveY = y;
             moveX = x;
         }
@@ -234,35 +248,57 @@ public class Chess extends JFrame {
         for (int y = 0; y < 8; y++) {
             for (int x = 0; x < 8; x++) {
                 if (buttons[y][x].getIcon() == dot || buttons[y][x].getBackground() == Color.red) {
-                    if (!colour) {
-                        DefColours();
+                       defColours();
                         clearDots();
                         return false;
-                    }
                 }
             }
         }
-        DefColours();
+       defColours();
         clearDots();
         return true;
     }
 
 
     static void pawnMove(int y, int x) { //просчет атаки пешки
-        if (include(y - 1, x - 1)) {
-            if (pieces[y - 1][x - 1] != null && checkShah(y, x, y - 1, x - 1)
-                    && pieces[y - 1][x - 1].colour != pieces[y][x].colour)
-                buttons[y - 1][x - 1].setBackground(Color.red);
 
-        }
-        if (include(y - 1, x + 1)) {
-            if (pieces[y - 1][x + 1] != null && checkShah(y, x, y - 1, x + 1)
-                    && pieces[y - 1][x + 1].colour != pieces[y][x].colour)
-                buttons[y - 1][x + 1].setBackground(Color.red);
-        }
-        if (include(y - 1, x) && (empty(y - 1, x)) && checkShah(y, x, y - 1, x)) buttons[y - 1][x].setIcon(dot);
-        if (pieces[y][x].fistMove && include(y - 2, x) && (empty(y - 2, x)) && checkShah(y, x, y - 2, x))
-            buttons[y - 2][x].setIcon(dot);
+     if (colour || mirrors) {
+
+         if (include(y - 1, x - 1)) {
+             if (pieces[y - 1][x - 1] != null && checkShah(y, x, y - 1, x - 1)
+                     && pieces[y - 1][x - 1].colour != pieces[y][x].colour)
+                 buttons[y - 1][x - 1].setBackground(Color.red);
+
+         }
+         if (include(y - 1, x + 1)) {
+             if (pieces[y - 1][x + 1] != null && checkShah(y, x, y - 1, x + 1)
+                     && pieces[y - 1][x + 1].colour != pieces[y][x].colour)
+                 buttons[y - 1][x + 1].setBackground(Color.red);
+         }
+         if (include(y - 1, x) && (empty(y - 1, x)) && checkShah(y, x, y - 1, x)) buttons[y - 1][x].setIcon(dot);
+         if (pieces[y][x].fistMove && include(y - 2, x) && (empty(y - 2, x)) && checkShah(y, x, y - 2, x))
+             buttons[y - 2][x].setIcon(dot);
+
+     } else {
+
+         if (include(y + 1, x + 1)) {
+             if (pieces[y + 1][x + 1] != null && checkShah(y, x, y + 1, x + 1)
+                     && pieces[y + 1][x + 1].colour != pieces[y][x].colour)
+                 buttons[y + 1][x + 1].setBackground(Color.red);
+
+         }
+         if (include(y + 1, x - 1)) {
+             if (pieces[y + 1][x - 1] != null && checkShah(y, x, y + 1, x - 1)
+                     && pieces[y + 1][x - 1].colour != pieces[y][x].colour)
+                 buttons[y + 1][x - 1].setBackground(Color.red);
+         }
+         if (include(y + 1, x) && (empty(y + 1, x)) && checkShah(y, x, y + 1, x)) buttons[y + 1][x].setIcon(dot);
+
+         if (pieces[y][x].fistMove && include(y + 2, x) && (empty(y + 2, x)) && checkShah(y, x, y + 2, x))
+             buttons[y + 2][x].setIcon(dot);
+
+     }
+
 
     }
 
@@ -298,11 +334,17 @@ public class Chess extends JFrame {
 
     static void CheckKnight(int y, int x, int y1, int x1) { //шаблон атаки коня
 
-        if (include(y + y1, x + x1) && empty(y + y1, x + x1) && checkShah(y, x, y + y1, x + x1))
+
+
+        if (include(y + y1, x + x1) && empty(y + y1, x + x1) && checkShah(y, x, y + y1, x + x1)) {
             buttons[y + y1][x + x1].setIcon(dot);
+
+
+        }
         if (include(y + y1, x + x1) && attackReady(y, x, y + y1, x + x1)
                 && checkShah(y, x, y + y1, x + x1))
             buttons[y + y1][x + x1].setBackground(Color.red);
+
     }
 
     static void queenMove(int y, int x) {
@@ -317,7 +359,6 @@ public class Chess extends JFrame {
     }
 
     static void move(int moveY, int moveX, int y, int x) { //смена хода
-       if (moveReady) {
 
            if (pieces[moveY][moveX].name.equals("king")) {
                if (x == moveX + 2) {
@@ -354,20 +395,19 @@ public class Chess extends JFrame {
                }
                buttons[y][x].setIcon((pieces[y][x].pieceIcon));
            }
-           mirror();
-           DefColours();
+           if (mirrors) mirror();
+          defColours();
            clearDots();
            colour = !colour;
-           if (endGame()) {
-               if (colour) System.out.println("Black wins");
-               else System.out.println("White wins");
-           }
-       }
+        //   if (endGame()) {
+         //      if (colour) System.out.println("Black wins");
+         //      else System.out.println("White wins");
+        //   }
+
     }
 
 
-    static Boolean checkShah(int y, int x, int y1, int x1) { // шах после хода
-
+    static boolean checkShah(int y, int x, int y1, int x1) { // шах после хода
         Piece piece = pieces[y][x];
         Piece piece1 = null;
         if (!empty(y1, x1)) piece1 = pieces[y1][x1];
@@ -375,8 +415,7 @@ public class Chess extends JFrame {
         pieces[y][x] = null;
         buttons[y1][x1].setIcon(piece.pieceIcon);
         pieces[y1][x1] = piece;
-        boolean r = !((colour && !checkKing(wKingY, wKingX, true)) || (!colour
-                && !checkKing(bKingY, bKingX, false)));
+        boolean r = !((colour && !checkKing(wKingY, wKingX, true)) || (!colour && !checkKing(bKingY, bKingX, false)));
         buttons[y][x].setIcon(piece.pieceIcon);
         pieces[y][x] = piece;
         if (piece1 != null) {
@@ -390,7 +429,6 @@ public class Chess extends JFrame {
     }
 
      static void checkLong(int y, int x, int y1, int x1) { //просчет возможности хода по вертикали, горизонтали, диагонали
-
         for (int i = 1; i <= 7; i++) {
             if (!include(y + i * y1, x + i * x1)) break;
             if ((empty(y + i * y1, x + i * x1)) && checkShah(y, x, y + i * y1, x + i * x1))
@@ -466,8 +504,7 @@ public class Chess extends JFrame {
     }
 
 
-    static Boolean checkKing(int y, int x, Boolean color) { //проверка на шах
-
+    static boolean checkKing(int y, int x, boolean color) { //проверка на шах
         if (!stop(y, x, 1, 1, "bishop", color)) return false;
         if (!stop(y, x, 1, -1, "bishop", color)) return false;
         if (!stop(y, x, -1, 1, "bishop", color)) return false;
@@ -505,14 +542,14 @@ public class Chess extends JFrame {
     }
 
 
-    static Boolean shortStop(int y, int x, int y1, int x1, String p, Boolean color) { //шаблон для проверки коротких атак
+    static boolean shortStop(int y, int x, int y1, int x1, String p, boolean color) { //шаблон для проверки коротких атак
         int i = 1;
         return !include(y + i * y1, x + i * x1) || empty(y + i * y1, x + i * x1)
                 || color == pieces[y + i * y1][x + i * x1].colour || !pieces[y + i * y1][x + i * x1].name.equals(p);
     }
 
 
-    static  Boolean stop(int y, int x, int y1, int x1, String p, Boolean color) { //шаблон для проверки длинных атак
+    static boolean stop(int y, int x, int y1, int x1, String p, boolean color) { //шаблон для проверки длинных атак
         for (int i = 1; i <= 7; i++) { // y+
             if (!include(y + i * y1, x + i * x1)) break;
             if (!empty(y + i * y1, x + i * x1)) {
@@ -526,15 +563,15 @@ public class Chess extends JFrame {
         return true;
     }
 
-    static Boolean empty(int y, int x) { //наличие фигуры
+    static boolean empty(int y, int x) { //наличие фигуры
         return (pieces[y][x] == null);
     }
 
-    static Boolean include(int y, int x) { //существование поля
+    static boolean include(int y, int x) { //существование поля
         return !(y > 7 || y < 0 || x > 7 || x < 0);
     }
 
-    static Boolean attackReady(int y, int x, int y1, int x1) {
+    static boolean attackReady(int y, int x, int y1, int x1) {
         return (pieces[y1][x1] != null && pieces[y1][x1].colour != pieces[y][x].colour);
     }
 

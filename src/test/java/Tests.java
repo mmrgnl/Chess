@@ -42,7 +42,7 @@ public class Tests {
         Chess.actionMove(3, 0);
         Chess.actionMove(3, 7);
         Chess.move(3, 0,  3, 7);
-        assertTrue(Chess.empty(3, 7));
+        assertFalse(Chess.empty(3, 7));
 
     }
 
@@ -50,6 +50,7 @@ public class Tests {
 
     void endGameTest() {
 
+        Chess.mirrors = false;
         Chess.FEN("1nbqk1nr/2p3r1/8/2p5/1p6/p2b4/8/7K");
         Chess.startGame();
         assertTrue(Chess.endGame());
