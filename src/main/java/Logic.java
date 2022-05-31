@@ -1,115 +1,15 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.Timer;
-public class Chess extends JFrame {
 
-    static Piece[][] pieces = new Piece[8][8];
-    static JButton[][] buttons = new JButton[8][8];
-    static ActionListener actionListener = new TestActionListener();
+public class Logic {
 
-    static ImageIcon dot = new ImageIcon("dot_PNG29.png");
     static int wKingY; //позиции короля
     static int wKingX;
     static int bKingY;
     static int bKingX;
     static boolean colour = true;//t = white, f = black
+    static Piece[][] pieces = new Piece[8][8];
     static boolean mirrors;
-    static int wTime = 1200;
-    static int bTime = 1200;
-    static JLabel label = new JLabel("...");
-
-    public Chess() {
-
-        JFrame choseFrame = new JFrame(); //панель для получения кода расположения фигур
-        JLabel enterTheFen =  new JLabel("Enter the FEN");
-        JButton submitFEN = new JButton("Submit");
-        JTextField textFEN = new JTextField(50);
-        textFEN.setHorizontalAlignment(JTextField.CENTER);
-        JCheckBox checkBox = new JCheckBox();
-        checkBox.setText("Mirror");
-        submitFEN.addActionListener(e -> { //для стандартной расстановки rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
-            FEN(textFEN.getText());
-            if (textFEN.getText().equals("")) FEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
-            startGame();
-            choseFrame.setVisible(false);
-            mirrors = checkBox.isSelected();
-        });
-
-
-        JPanel p = new JPanel();
-        p.add(textFEN);
-        p.add(submitFEN);
-        p.add(enterTheFen);
-        p.add(checkBox);
-        ImageIcon icon = new ImageIcon("1728594.png");
-        choseFrame.setTitle("Chose");
-        choseFrame.setIconImage(icon.getImage());
-        choseFrame.setLayout(new BorderLayout(20,0));
-        choseFrame.add(p,BorderLayout.CENTER );
-        choseFrame.setSize(700, 300);
-        choseFrame.setVisible(true);
-
-    }
-
-
-    static void startGame() { //создание окна игры, расстановка фигур
-
-        JFrame chessBoard = new JFrame();
-        chessBoard.setSize(1000, 1000);
-        chessBoard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        chessBoard.setTitle("Chess");
-        ImageIcon icon = new ImageIcon("1728594.png");
-        chessBoard.setIconImage(icon.getImage());
-        JPanel board = new JPanel(new GridLayout(8, 8));
-        board.setSize(525, 525);
-
-        JPanel timer = new JPanel();
-        timer.setSize(525, 100);
-        Timer wTimer = new Timer(1000, e -> {
-            if (colour) {
-                if (wTime > 0) {
-                    wTime--;
-                    label.setText(wTime / 60 + ":" + wTime % 60);
-                } else System.out.println("Black wins");
-            } else {
-                if (bTime > 0) {
-                    bTime--;
-                    label.setText(bTime / 60 + ":" + bTime % 60);
-                } else System.out.println("White wins");
-            }
-        });
-
-        boolean t = false;
-
-        for (int y = 0; y < 8; y++) {
-            t = !t;
-            for (int x = 0; x < 8; x++) {
-                buttons[y][x] = new JButton();
-                if (t) {
-                    if (x % 2 == 0) buttons[y][x].setBackground(Color.pink);
-                    else buttons[y][x].setBackground(Color.white);
-                } else {
-                    if (x % 2 == 0) buttons[y][x].setBackground(Color.white);
-                    else buttons[y][x].setBackground(Color.pink);
-                }
-
-                if (pieces[y][x] != null) buttons[y][x].setIcon(pieces[y][x].pieceIcon);
-                buttons[y][x].addActionListener(actionListener);
-                board.add(buttons[y][x]);
-            }
-        }
-        timer.add(label);
-        wTimer.start();
-        chessBoard.add(timer, BorderLayout.SOUTH);
-        chessBoard.add(board);
-        chessBoard.pack();
-        chessBoard.setVisible(true);
-
-    }
-
-
 
     static void FEN(String s) { //обработка кода расположения фигур
         int y = 0;
@@ -174,11 +74,11 @@ public class Chess extends JFrame {
             t = !t;
             for (int x = 0; x < 8; x++) {
                 if (t) {
-                    if (x % 2 == 0) buttons[y][x].setBackground(Color.pink);
-                    else buttons[y][x].setBackground(Color.white);
+                    if (x % 2 == 0) ChessBoard.buttons[y][x].setBackground(Color.pink);
+                    else ChessBoard.buttons[y][x].setBackground(Color.white);
                 } else {
-                    if (x % 2 == 0) buttons[y][x].setBackground(Color.white);
-                    else buttons[y][x].setBackground(Color.pink);
+                    if (x % 2 == 0) ChessBoard.buttons[y][x].setBackground(Color.white);
+                    else ChessBoard.buttons[y][x].setBackground(Color.pink);
                 }
             }
         }
@@ -189,33 +89,16 @@ public class Chess extends JFrame {
     static int moveY;
     static int moveX;
 
-    static class TestActionListener implements ActionListener {
-        public void actionPerformed(ActionEvent e) { //обработка кнопок
-            JButton o = (JButton) e.getSource();
-            for (int y = 0; y < 8; y++) { //поиск нажатой кнопки
-                for (int x = 0; x < 8; x++) {
-                    if (buttons[y][x] == o) {
-                        actionMove(y, x);
-                        break;
-                    }
-                }
-            }
-
-        }
-    }
 
     static void actionMove(int y, int x) {
-        if (buttons[y][x].getBackground() == Color.red || ( buttons[y][x].getIcon() == dot)) {
+        if (ChessBoard.buttons[y][x].getBackground() == Color.red || ( ChessBoard.buttons[y][x].getIcon() == ChessBoard.dot)) {
             move(moveY, moveX, y, x);
         }
-        if (buttons[y][x].getIcon() != dot) {
+        if (ChessBoard.buttons[y][x].getIcon() != ChessBoard.dot) {
             clearDots();
-           defColours();
+            defColours();
         }
         if (pieces[y][x] != null && colour == pieces[y][x].colour) {
-
-            //System.out.println(pieces[y][x].colour);
-
             switch (pieces[y][x].name) {
                 case "pawn" -> pawnMove(y, x);
                 case "rook" -> rookMove(y, x);
@@ -247,14 +130,14 @@ public class Chess extends JFrame {
 
         for (int y = 0; y < 8; y++) {
             for (int x = 0; x < 8; x++) {
-                if (buttons[y][x].getIcon() == dot || buttons[y][x].getBackground() == Color.red) {
-                       defColours();
-                        clearDots();
-                        return false;
+                if (ChessBoard.buttons[y][x].getIcon() == ChessBoard.dot || ChessBoard.buttons[y][x].getBackground() == Color.red) {
+                    defColours();
+                    clearDots();
+                    return false;
                 }
             }
         }
-       defColours();
+        defColours();
         clearDots();
         return true;
     }
@@ -262,42 +145,42 @@ public class Chess extends JFrame {
 
     static void pawnMove(int y, int x) { //просчет атаки пешки
 
-     if (colour || mirrors) {
+        if (colour || mirrors) {
 
-         if (include(y - 1, x - 1)) {
-             if (pieces[y - 1][x - 1] != null && checkShah(y, x, y - 1, x - 1)
-                     && pieces[y - 1][x - 1].colour != pieces[y][x].colour)
-                 buttons[y - 1][x - 1].setBackground(Color.red);
+            if (include(y - 1, x - 1)) {
+                if (pieces[y - 1][x - 1] != null && checkShah(y, x, y - 1, x - 1)
+                        && pieces[y - 1][x - 1].colour != pieces[y][x].colour)
+                    ChessBoard.buttons[y - 1][x - 1].setBackground(Color.red);
 
-         }
-         if (include(y - 1, x + 1)) {
-             if (pieces[y - 1][x + 1] != null && checkShah(y, x, y - 1, x + 1)
-                     && pieces[y - 1][x + 1].colour != pieces[y][x].colour)
-                 buttons[y - 1][x + 1].setBackground(Color.red);
-         }
-         if (include(y - 1, x) && (empty(y - 1, x)) && checkShah(y, x, y - 1, x)) buttons[y - 1][x].setIcon(dot);
-         if (pieces[y][x].fistMove && include(y - 2, x) && (empty(y - 2, x)) && checkShah(y, x, y - 2, x))
-             buttons[y - 2][x].setIcon(dot);
+            }
+            if (include(y - 1, x + 1)) {
+                if (pieces[y - 1][x + 1] != null && checkShah(y, x, y - 1, x + 1)
+                        && pieces[y - 1][x + 1].colour != pieces[y][x].colour)
+                    ChessBoard.buttons[y - 1][x + 1].setBackground(Color.red);
+            }
+            if (include(y - 1, x) && (empty(y - 1, x)) && checkShah(y, x, y - 1, x)) ChessBoard.buttons[y - 1][x].setIcon(ChessBoard.dot);
+            if (pieces[y][x].fistMove && include(y - 2, x) && (empty(y - 2, x)) && checkShah(y, x, y - 2, x))
+                ChessBoard.buttons[y - 2][x].setIcon(ChessBoard.dot);
 
-     } else {
+        } else {
 
-         if (include(y + 1, x + 1)) {
-             if (pieces[y + 1][x + 1] != null && checkShah(y, x, y + 1, x + 1)
-                     && pieces[y + 1][x + 1].colour != pieces[y][x].colour)
-                 buttons[y + 1][x + 1].setBackground(Color.red);
+            if (include(y + 1, x + 1)) {
+                if (pieces[y + 1][x + 1] != null && checkShah(y, x, y + 1, x + 1)
+                        && pieces[y + 1][x + 1].colour != pieces[y][x].colour)
+                    ChessBoard.buttons[y + 1][x + 1].setBackground(Color.red);
 
-         }
-         if (include(y + 1, x - 1)) {
-             if (pieces[y + 1][x - 1] != null && checkShah(y, x, y + 1, x - 1)
-                     && pieces[y + 1][x - 1].colour != pieces[y][x].colour)
-                 buttons[y + 1][x - 1].setBackground(Color.red);
-         }
-         if (include(y + 1, x) && (empty(y + 1, x)) && checkShah(y, x, y + 1, x)) buttons[y + 1][x].setIcon(dot);
+            }
+            if (include(y + 1, x - 1)) {
+                if (pieces[y + 1][x - 1] != null && checkShah(y, x, y + 1, x - 1)
+                        && pieces[y + 1][x - 1].colour != pieces[y][x].colour)
+                    ChessBoard.buttons[y + 1][x - 1].setBackground(Color.red);
+            }
+            if (include(y + 1, x) && (empty(y + 1, x)) && checkShah(y, x, y + 1, x)) ChessBoard.buttons[y + 1][x].setIcon(ChessBoard.dot);
 
-         if (pieces[y][x].fistMove && include(y + 2, x) && (empty(y + 2, x)) && checkShah(y, x, y + 2, x))
-             buttons[y + 2][x].setIcon(dot);
+            if (pieces[y][x].fistMove && include(y + 2, x) && (empty(y + 2, x)) && checkShah(y, x, y + 2, x))
+                ChessBoard.buttons[y + 2][x].setIcon(ChessBoard.dot);
 
-     }
+        }
 
 
     }
@@ -337,13 +220,13 @@ public class Chess extends JFrame {
 
 
         if (include(y + y1, x + x1) && empty(y + y1, x + x1) && checkShah(y, x, y + y1, x + x1)) {
-            buttons[y + y1][x + x1].setIcon(dot);
+            ChessBoard.buttons[y + y1][x + x1].setIcon(ChessBoard.dot);
 
 
         }
         if (include(y + y1, x + x1) && attackReady(y, x, y + y1, x + x1)
                 && checkShah(y, x, y + y1, x + x1))
-            buttons[y + y1][x + x1].setBackground(Color.red);
+            ChessBoard.buttons[y + y1][x + x1].setBackground(Color.red);
 
     }
 
@@ -360,49 +243,54 @@ public class Chess extends JFrame {
 
     static void move(int moveY, int moveX, int y, int x) { //смена хода
 
-           if (pieces[moveY][moveX].name.equals("king")) {
-               if (x == moveX + 2) {
-                   pieces[7][5] = pieces[7][7];
-                   buttons[7][5].setIcon(pieces[7][5].pieceIcon);
-                   pieces[7][7] = null;
-                   buttons[7][7].setIcon(null);
+        if (pieces[moveY][moveX].name.equals("king")) {
+            if (x == moveX + 2) {
+                pieces[7][5] = pieces[7][7];
+                ChessBoard.buttons[7][5].setIcon(pieces[7][5].pieceIcon);
+                pieces[7][7] = null;
+                ChessBoard.buttons[7][7].setIcon(null);
 
-               }
-               if (x == moveX - 2) {
-                   pieces[7][3] = pieces[7][0];
-                   buttons[7][3].setIcon(pieces[7][3].pieceIcon);
-                   pieces[7][0] = null;
-                   buttons[7][0].setIcon(null);
-               }
-               if (colour) {
-                   wKingY = y;
-                   wKingX = x;
-               } else {
-                   bKingY = y;
-                   bKingX = x;
-               }
-           }
-           buttons[moveY][moveX].setIcon(null);
-           buttons[y][x].setIcon(pieces[moveY][moveX].pieceIcon);
-           pieces[y][x] = pieces[moveY][moveX];
-           pieces[moveY][moveX] = null;
-           if (pieces[y][x].fistMove != null) pieces[y][x].fistMove = false;
-           if (pieces[y][x].name.equals("pawn") && y == 0) {
-               if (pieces[y][x].colour) {
-                   pieces[y][x] = new Piece("queen", true, null, new ImageIcon("queenW.png"));
-               } else {
-                   pieces[y][x] = new Piece("queen", false, null, new ImageIcon("queenB.png"));
-               }
-               buttons[y][x].setIcon((pieces[y][x].pieceIcon));
-           }
-           if (mirrors) mirror();
-          defColours();
-           clearDots();
-           colour = !colour;
-        //   if (endGame()) {
-         //      if (colour) System.out.println("Black wins");
-         //      else System.out.println("White wins");
-        //   }
+            }
+            if (x == moveX - 2) {
+                pieces[7][3] = pieces[7][0];
+                ChessBoard.buttons[7][3].setIcon(pieces[7][3].pieceIcon);
+                pieces[7][0] = null;
+                ChessBoard.buttons[7][0].setIcon(null);
+            }
+            if (colour) {
+                wKingY = y;
+                wKingX = x;
+            } else {
+                bKingY = y;
+                bKingX = x;
+            }
+        }
+        ChessBoard.buttons[moveY][moveX].setIcon(null);
+        ChessBoard.buttons[y][x].setIcon(pieces[moveY][moveX].pieceIcon);
+        pieces[y][x] = pieces[moveY][moveX];
+        pieces[moveY][moveX] = null;
+        if (pieces[y][x].fistMove != null) pieces[y][x].fistMove = false;
+        if (pieces[y][x].name.equals("pawn") && y == 0) {
+            if (pieces[y][x].colour) {
+                pieces[y][x] = new Piece("queen", true, null, new ImageIcon("queenW.png"));
+            } else {
+                pieces[y][x] = new Piece("queen", false, null, new ImageIcon("queenB.png"));
+            }
+            ChessBoard.buttons[y][x].setIcon((pieces[y][x].pieceIcon));
+        }
+        if (mirrors) {
+            wKingY = 7 - wKingY;
+            bKingY = 7 -  bKingY;
+            mirror();
+        }
+        defColours();
+        clearDots();
+        colour = !colour;
+
+        if (endGame()) {
+            if (colour) System.out.println("Black wins");
+            else System.out.println("White wins");
+        }
 
     }
 
@@ -411,32 +299,33 @@ public class Chess extends JFrame {
         Piece piece = pieces[y][x];
         Piece piece1 = null;
         if (!empty(y1, x1)) piece1 = pieces[y1][x1];
-        buttons[y][x].setIcon(null);
+        ChessBoard.buttons[y][x].setIcon(null);
         pieces[y][x] = null;
-        buttons[y1][x1].setIcon(piece.pieceIcon);
+        ChessBoard.buttons[y1][x1].setIcon(piece.pieceIcon);
         pieces[y1][x1] = piece;
         boolean r = !((colour && !checkKing(wKingY, wKingX, true)) || (!colour && !checkKing(bKingY, bKingX, false)));
-        buttons[y][x].setIcon(piece.pieceIcon);
+        System.out.println(r);
+        ChessBoard.buttons[y][x].setIcon(piece.pieceIcon);
         pieces[y][x] = piece;
         if (piece1 != null) {
-            buttons[y1][x1].setIcon(piece1.pieceIcon);
+            ChessBoard.buttons[y1][x1].setIcon(piece1.pieceIcon);
             pieces[y1][x1] = piece1;
         } else {
-            buttons[y1][x1].setIcon(null);
+            ChessBoard.buttons[y1][x1].setIcon(null);
             pieces[y1][x1] = null;
         }
         return r;
     }
 
-     static void checkLong(int y, int x, int y1, int x1) { //просчет возможности хода по вертикали, горизонтали, диагонали
+    static void checkLong(int y, int x, int y1, int x1) { //просчет возможности хода по вертикали, горизонтали, диагонали
         for (int i = 1; i <= 7; i++) {
             if (!include(y + i * y1, x + i * x1)) break;
             if ((empty(y + i * y1, x + i * x1)) && checkShah(y, x, y + i * y1, x + i * x1))
-                buttons[y + i * y1][x + i * x1].setIcon(dot);
+                ChessBoard.buttons[y + i * y1][x + i * x1].setIcon(ChessBoard.dot);
             else {
                 if (pieces[y + i * y1][x + i * x1] != null && checkShah(y, x, y + i * y1, x + i * x1)
                         && pieces[y + i * y1][x + i * x1].colour != pieces[y][x].colour)
-                    buttons[y + i * y1][x + i * x1].setBackground(Color.red);
+                    ChessBoard.buttons[y + i * y1][x + i * x1].setBackground(Color.red);
                 break;
             }
         }
@@ -447,21 +336,24 @@ public class Chess extends JFrame {
     static void mirror() { //разворот доски
         for (int y = 4; y < 8; y++) {
             for (int x = 0; x < 8; x++) {
-                ImageIcon temp = (ImageIcon) buttons[y][x].getIcon();
-                buttons[y][x].setIcon(buttons[7 - y][x].getIcon());
-                buttons[7 - y][x].setIcon(temp);
+                ImageIcon temp = (ImageIcon) ChessBoard.buttons[y][x].getIcon();
+                ChessBoard.buttons[y][x].setIcon(ChessBoard.buttons[7 - y][x].getIcon());
+                ChessBoard.buttons[7 - y][x].setIcon(temp);
                 Piece tempP = pieces[y][x];
                 pieces[y][x] = pieces[7 - y][x];
                 pieces[7 - y][x] = tempP;
+
             }
         }
     }
 
 
+
+
     static void clearDots() { //удаление кругов хода
         for (int y = 0; y < 8; y++) {
             for (int x = 0; x < 8; x++) {
-                if (buttons[y][x].getIcon() == dot) buttons[y][x].setIcon(null);
+                if (ChessBoard.buttons[y][x].getIcon() == ChessBoard.dot) ChessBoard.buttons[y][x].setIcon(null);
             }
         }
     }
@@ -471,11 +363,11 @@ public class Chess extends JFrame {
         int i = 1;
         if (include(y + i * y1, x + i * x1)) {
             if ((empty(y + i * y1, x + i * x1)) && checkKing(y + i * y1, x + i * x1, color))
-                buttons[y + i * y1][x + i * x1].setIcon(dot);
+                ChessBoard.buttons[y + i * y1][x + i * x1].setIcon(ChessBoard.dot);
             else {
                 if (!empty(y + i * y1, x + i * x1) && pieces[y + i * y1][x + i * x1].colour != pieces[y][x].colour
                         && checkKing(y + i * y1, x + i * x1, color))
-                    buttons[y + i * y1][x + i * x1].setBackground(Color.red);
+                    ChessBoard.buttons[y + i * y1][x + i * x1].setBackground(Color.red);
             }
         }
     }
@@ -505,14 +397,19 @@ public class Chess extends JFrame {
 
 
     static boolean checkKing(int y, int x, boolean color) { //проверка на шах
+
+        // System.out.println();
+
         if (!stop(y, x, 1, 1, "bishop", color)) return false;
         if (!stop(y, x, 1, -1, "bishop", color)) return false;
         if (!stop(y, x, -1, 1, "bishop", color)) return false;
         if (!stop(y, x, -1, -1, "bishop", color)) return false;
         if (!stop(y, x, 1, 0, "rook", color)) return false;
         if (!stop(y, x, -1, 0, "rook", color)) return false;
+
         if (!stop(y, x, 0, 1, "rook", color)) return false;
         if (!stop(y, x, 0, -1, "rook", color)) return false;
+
         if (!shortStop(y, x, 1, 1, "king", color)) return false;
         if (!shortStop(y, x, 1, -1, "king", color)) return false;
         if (!shortStop(y, x, 1, 0, "king", color)) return false;
@@ -553,11 +450,10 @@ public class Chess extends JFrame {
         for (int i = 1; i <= 7; i++) { // y+
             if (!include(y + i * y1, x + i * x1)) break;
             if (!empty(y + i * y1, x + i * x1)) {
-                if (pieces[y + i * y1][x + i * x1].colour == color
-                        && !pieces[y + i * y1][x + i * x1].name.equals("king"))
-                    return true;
-                if (pieces[y + i * y1][x + i * x1].name.equals(p)) return false;
-                if (pieces[y + i * y1][x + i * x1].name.equals("queen")) return false;
+                if(color != pieces[y + i * y1][x + i * x1].colour) {
+                    return (!pieces[y + i * y1][x + i * x1].name.equals(p)
+                            && !pieces[y + i * y1][x + i * x1].name.equals("queen"));
+                }
             }
         }
         return true;
