@@ -116,4 +116,46 @@ public class ChessBoard extends JFrame {
         }
     }
 
+    static void mirror() { //разворот доски
+        for (int y = 4; y < 8; y++) {
+            for (int x = 0; x < 8; x++) {
+                ImageIcon temp = (ImageIcon) ChessBoard.buttons[y][x].getIcon();
+                ChessBoard.buttons[y][x].setIcon(ChessBoard.buttons[7 - y][x].getIcon());
+                ChessBoard.buttons[7 - y][x].setIcon(temp);
+                Piece tempP = Logic.pieces[y][x];
+                Logic.pieces[y][x] = Logic.pieces[7 - y][x];
+                Logic.pieces[7 - y][x] = tempP;
+
+            }
+        }
+    }
+
+
+    static void clearDots() { //удаление кругов хода
+        for (int y = 0; y < 8; y++) {
+            for (int x = 0; x < 8; x++) {
+                if (ChessBoard.buttons[y][x].getIcon() == ChessBoard.dot) ChessBoard.buttons[y][x].setIcon(null);
+            }
+        }
+    }
+
+    static void defColours() { //исправление цветов
+        boolean t = false;
+        for (int y = 0; y < 8; y++) {
+            t = !t;
+            for (int x = 0; x < 8; x++) {
+                if (t) {
+                    if (x % 2 == 0) ChessBoard.buttons[y][x].setBackground(Color.pink);
+                    else ChessBoard.buttons[y][x].setBackground(Color.white);
+                } else {
+                    if (x % 2 == 0) ChessBoard.buttons[y][x].setBackground(Color.white);
+                    else ChessBoard.buttons[y][x].setBackground(Color.pink);
+                }
+            }
+        }
+
+
+    }
+
+
 }

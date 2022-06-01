@@ -20,34 +20,34 @@ public class Logic {
             for (x = 0; x < 8; x++) {
                 if (x < symbol.length()) {
                     switch (symbol.charAt(x)) {
-                        case ('p') -> pieces[y][x1] = new Piece("pawn", false, true,
+                        case ('p') -> pieces[y][x1] = new Piece(Piece.Name.PAWN, false, true,
                                 new ImageIcon("pawnB.png"));
-                        case ('r') -> pieces[y][x1] = new Piece("rook", false, true,
+                        case ('r') -> pieces[y][x1] = new Piece(Piece.Name.ROOK, false, true,
                                 new ImageIcon("rookB.png"));
-                        case ('n') -> pieces[y][x1] = new Piece("knight", false, null,
+                        case ('n') -> pieces[y][x1] = new Piece(Piece.Name.KNIGHT, false, null,
                                 new ImageIcon("knightB.png"));
-                        case ('b') -> pieces[y][x1] = new Piece("bishop", false, null,
+                        case ('b') -> pieces[y][x1] = new Piece(Piece.Name.BISHOP, false, null,
                                 new ImageIcon("bishopB.png"));
-                        case ('q') -> pieces[y][x1] = new Piece("queen", false, null,
+                        case ('q') -> pieces[y][x1] = new Piece(Piece.Name.QUEEN, false, null,
                                 new ImageIcon("queenB.png"));
                         case ('k') -> {
-                            pieces[y][x1] = new Piece("king", false, true,
+                            pieces[y][x1] = new Piece(Piece.Name.KING, false, true,
                                     new ImageIcon("kingB.png"));
                             bKingY = y;
                             bKingX = x1;
                         }
-                        case ('P') -> pieces[y][x1] = new Piece("pawn", true, true,
+                        case ('P') -> pieces[y][x1] = new Piece(Piece.Name.PAWN, true, true,
                                 new ImageIcon("pawnW.png"));
-                        case ('R') -> pieces[y][x1] = new Piece("rook", true, true,
+                        case ('R') -> pieces[y][x1] = new Piece(Piece.Name.ROOK, true, true,
                                 new ImageIcon("rookW.png"));
-                        case ('N') -> pieces[y][x1] = new Piece("knight", true, null,
+                        case ('N') -> pieces[y][x1] = new Piece(Piece.Name.KNIGHT, true, null,
                                 new ImageIcon("knightW.png"));
-                        case ('B') -> pieces[y][x1] = new Piece("bishop", true, null,
+                        case ('B') -> pieces[y][x1] = new Piece(Piece.Name.BISHOP, true, null,
                                 new ImageIcon("bishopW.png"));
-                        case ('Q') -> pieces[y][x1] = new Piece("queen", true, null,
+                        case ('Q') -> pieces[y][x1] = new Piece(Piece.Name.QUEEN, true, null,
                                 new ImageIcon("queenW.png"));
                         case ('K') -> {
-                            pieces[y][x1] = new Piece("king", true, true,
+                            pieces[y][x1] = new Piece(Piece.Name.KING, true, true,
                                     new ImageIcon("kingW.png"));
                             wKingY = y;
                             wKingX = x1;
@@ -68,44 +68,25 @@ public class Logic {
         }
     }
 
-    static void defColours() { //исправление цветов
-        boolean t = false;
-        for (int y = 0; y < 8; y++) {
-            t = !t;
-            for (int x = 0; x < 8; x++) {
-                if (t) {
-                    if (x % 2 == 0) ChessBoard.buttons[y][x].setBackground(Color.pink);
-                    else ChessBoard.buttons[y][x].setBackground(Color.white);
-                } else {
-                    if (x % 2 == 0) ChessBoard.buttons[y][x].setBackground(Color.white);
-                    else ChessBoard.buttons[y][x].setBackground(Color.pink);
-                }
-            }
-        }
-
-
-    }
-
     static int moveY;
     static int moveX;
-
 
     static void actionMove(int y, int x) {
         if (ChessBoard.buttons[y][x].getBackground() == Color.red || ( ChessBoard.buttons[y][x].getIcon() == ChessBoard.dot)) {
             move(moveY, moveX, y, x);
         }
         if (ChessBoard.buttons[y][x].getIcon() != ChessBoard.dot) {
-            clearDots();
-            defColours();
+            ChessBoard.clearDots();
+            ChessBoard.defColours();
         }
         if (pieces[y][x] != null && colour == pieces[y][x].colour) {
             switch (pieces[y][x].name) {
-                case "pawn" -> pawnMove(y, x);
-                case "rook" -> rookMove(y, x);
-                case "knight" -> knightMove(y, x);
-                case "bishop" -> bishopMove(y, x);
-                case "queen" -> queenMove(y, x);
-                case "king" -> kingMove(y, x);
+                case PAWN -> pawnMove(y, x);
+                case ROOK -> rookMove(y, x);
+                case KNIGHT -> knightMove(y, x);
+                case BISHOP -> bishopMove(y, x);
+                case QUEEN -> queenMove(y, x);
+                case KING -> kingMove(y, x);
             }
             moveY = y;
             moveX = x;
@@ -117,12 +98,12 @@ public class Logic {
             for (int x = 0; x < 8; x++) {
                 if (pieces[y][x] != null && pieces[y][x].colour == colour) {
                     switch (pieces[y][x].name) {
-                        case "pawn" -> pawnMove(y, x);
-                        case "rook" -> rookMove(y, x);
-                        case "knight" -> knightMove(y, x);
-                        case "bishop" -> bishopMove(y, x);
-                        case "queen" -> queenMove(y, x);
-                        case "king" -> kingMove(y, x);
+                        case PAWN -> pawnMove(y, x);
+                        case ROOK -> rookMove(y, x);
+                        case KNIGHT -> knightMove(y, x);
+                        case BISHOP -> bishopMove(y, x);
+                        case QUEEN -> queenMove(y, x);
+                        case KING -> kingMove(y, x);
                     }
                 }
             }
@@ -131,14 +112,14 @@ public class Logic {
         for (int y = 0; y < 8; y++) {
             for (int x = 0; x < 8; x++) {
                 if (ChessBoard.buttons[y][x].getIcon() == ChessBoard.dot || ChessBoard.buttons[y][x].getBackground() == Color.red) {
-                    defColours();
-                    clearDots();
+                    ChessBoard.defColours();
+                    ChessBoard.clearDots();
                     return false;
                 }
             }
         }
-        defColours();
-        clearDots();
+        ChessBoard.defColours();
+        ChessBoard.clearDots();
         return true;
     }
 
@@ -243,7 +224,7 @@ public class Logic {
 
     static void move(int moveY, int moveX, int y, int x) { //смена хода
 
-        if (pieces[moveY][moveX].name.equals("king")) {
+        if (pieces[moveY][moveX].name.equals(Piece.Name.KING)) {
             if (x == moveX + 2) {
                 pieces[7][5] = pieces[7][7];
                 ChessBoard.buttons[7][5].setIcon(pieces[7][5].pieceIcon);
@@ -270,21 +251,21 @@ public class Logic {
         pieces[y][x] = pieces[moveY][moveX];
         pieces[moveY][moveX] = null;
         if (pieces[y][x].fistMove != null) pieces[y][x].fistMove = false;
-        if (pieces[y][x].name.equals("pawn") && y == 0) {
+        if (pieces[y][x].name.equals(Piece.Name.PAWN) && y == 0) {
             if (pieces[y][x].colour) {
-                pieces[y][x] = new Piece("queen", true, null, new ImageIcon("queenW.png"));
+                pieces[y][x] = new Piece(Piece.Name.QUEEN, true, null, new ImageIcon("queenW.png"));
             } else {
-                pieces[y][x] = new Piece("queen", false, null, new ImageIcon("queenB.png"));
+                pieces[y][x] = new Piece(Piece.Name.QUEEN, false, null, new ImageIcon("queenB.png"));
             }
             ChessBoard.buttons[y][x].setIcon((pieces[y][x].pieceIcon));
         }
         if (mirrors) {
             wKingY = 7 - wKingY;
             bKingY = 7 -  bKingY;
-            mirror();
+            ChessBoard.mirror();
         }
-        defColours();
-        clearDots();
+        ChessBoard.defColours();
+        ChessBoard.clearDots();
         colour = !colour;
 
         if (endGame()) {
@@ -294,7 +275,6 @@ public class Logic {
 
     }
 
-
     static boolean checkShah(int y, int x, int y1, int x1) { // шах после хода
         Piece piece = pieces[y][x];
         Piece piece1 = null;
@@ -303,8 +283,8 @@ public class Logic {
         pieces[y][x] = null;
         ChessBoard.buttons[y1][x1].setIcon(piece.pieceIcon);
         pieces[y1][x1] = piece;
-        boolean r = !((colour && !checkKing(wKingY, wKingX, true)) || (!colour && !checkKing(bKingY, bKingX, false)));
-        System.out.println(r);
+        boolean r = !((colour && !checkKing(wKingY, wKingX, true)) || (!colour &&
+                !checkKing(bKingY, bKingX, false)));
         ChessBoard.buttons[y][x].setIcon(piece.pieceIcon);
         pieces[y][x] = piece;
         if (piece1 != null) {
@@ -330,32 +310,6 @@ public class Logic {
             }
         }
 
-
-    }
-
-    static void mirror() { //разворот доски
-        for (int y = 4; y < 8; y++) {
-            for (int x = 0; x < 8; x++) {
-                ImageIcon temp = (ImageIcon) ChessBoard.buttons[y][x].getIcon();
-                ChessBoard.buttons[y][x].setIcon(ChessBoard.buttons[7 - y][x].getIcon());
-                ChessBoard.buttons[7 - y][x].setIcon(temp);
-                Piece tempP = pieces[y][x];
-                pieces[y][x] = pieces[7 - y][x];
-                pieces[7 - y][x] = tempP;
-
-            }
-        }
-    }
-
-
-
-
-    static void clearDots() { //удаление кругов хода
-        for (int y = 0; y < 8; y++) {
-            for (int x = 0; x < 8; x++) {
-                if (ChessBoard.buttons[y][x].getIcon() == ChessBoard.dot) ChessBoard.buttons[y][x].setIcon(null);
-            }
-        }
     }
 
 
@@ -375,12 +329,12 @@ public class Logic {
 
     static void kingMove(int y, int x) { //обработка хода короля
         if (pieces[y][x].fistMove && !empty(7, 0) && empty(7, 1) && empty(7, 3)
-                && pieces[7][0].name.equals("rook")
+                && pieces[7][0].name.equals(Piece.Name.ROOK)
                 && pieces[7][0].fistMove) { //обработка рокировки
             kingCheckMove(y, x, 0, -2, colour);
         }
 
-        if (pieces[y][x].fistMove && !empty(7, 7) && empty(7, 6) && pieces[7][7].name.equals("rook")
+        if (pieces[y][x].fistMove && !empty(7, 7) && empty(7, 6) && pieces[7][7].name.equals(Piece.Name.ROOK)
                 && pieces[7][7].fistMove) {
             kingCheckMove(y, x, 0, +2, colour);
         }
@@ -397,66 +351,59 @@ public class Logic {
 
 
     static boolean checkKing(int y, int x, boolean color) { //проверка на шах
-
-        // System.out.println();
-
-        if (!stop(y, x, 1, 1, "bishop", color)) return false;
-        if (!stop(y, x, 1, -1, "bishop", color)) return false;
-        if (!stop(y, x, -1, 1, "bishop", color)) return false;
-        if (!stop(y, x, -1, -1, "bishop", color)) return false;
-        if (!stop(y, x, 1, 0, "rook", color)) return false;
-        if (!stop(y, x, -1, 0, "rook", color)) return false;
-
-        if (!stop(y, x, 0, 1, "rook", color)) return false;
-        if (!stop(y, x, 0, -1, "rook", color)) return false;
-
-        if (!shortStop(y, x, 1, 1, "king", color)) return false;
-        if (!shortStop(y, x, 1, -1, "king", color)) return false;
-        if (!shortStop(y, x, 1, 0, "king", color)) return false;
-        if (!shortStop(y, x, -1, 1, "king", color)) return false;
-        if (!shortStop(y, x, -1, -1, "king", color)) return false;
-        if (!shortStop(y, x, -1, 0, "king", color)) return false;
-        if (!shortStop(y, x, 0, -1, "king", color)) return false;
-        if (!shortStop(y, x, 0, 1, "king", color)) return false;
-        if (!shortStop(y, x, 1, -1, "king", color)) return false;
-        if (!shortStop(y, x, 1, -1, "king", color)) return false;
-        if (!shortStop(y, x, 0, -1, "king", color)) return false;
-        if (!shortStop(y, x, -1, 1, "king", color)) return false;
-        if (!shortStop(y, x, -1, -1, "king", color)) return false;
-        if (!shortStop(y, x, 0, -1, "king", color)) return false;
-        if (!shortStop(y, x, 0, -1, "king", color)) return false;
-        if (!shortStop(y, x, 0, -1, "king", color)) return false;
-        if (!shortStop(y, x, -1, 1, "pawn", color)) return false;
-        if (!shortStop(y, x, -1, -1, "pawn", color)) return false;
-        if (!shortStop(y, x, 2, 1, " knight", color)) return false;
-        if (!shortStop(y, x, 2, -1, "knight", color)) return false;
-        if (!shortStop(y, x, -2, 1, "knight", color)) return false;
-        if (!shortStop(y, x, -2, -1, "knight", color)) return false;
-        if (!shortStop(y, x, 1, -2, "knight", color)) return false;
-        if (!shortStop(y, x, 1, 2, "knight", color)) return false;
-        if (!shortStop(y, x, -1, -2, "knight", color)) return false;
-        return shortStop(y, x, -1, 2, "knight", color);
+        if (stop(y, x, 1, 1, Piece.Name.BISHOP, color)) return false;
+        if (stop(y, x, 1, -1, Piece.Name.BISHOP, color)) return false;
+        if (stop(y, x, -1, 1, Piece.Name.BISHOP, color)) return false;
+        if (stop(y, x, -1, -1, Piece.Name.BISHOP, color)) return false;
+        if (stop(y, x, 1, 0, Piece.Name.ROOK, color)) return false;
+        if (stop(y, x, -1, 0, Piece.Name.ROOK, color)) return false;
+        if (stop(y, x, 0, 1, Piece.Name.ROOK, color)) return false;
+        if (stop(y, x, 0, -1, Piece.Name.ROOK, color)) return false;
+        if (!shortStop(y, x, 1, 1, Piece.Name.KING, color)) return false;
+        if (!shortStop(y, x, 1, -1, Piece.Name.KING, color)) return false;
+        if (!shortStop(y, x, 1, 0, Piece.Name.KING, color)) return false;
+        if (!shortStop(y, x, -1, 1, Piece.Name.KING, color)) return false;
+        if (!shortStop(y, x, -1, -1, Piece.Name.KING, color)) return false;
+        if (!shortStop(y, x, -1, 0, Piece.Name.KING, color)) return false;
+        if (!shortStop(y, x, 0, -1, Piece.Name.KING, color)) return false;
+        if (!shortStop(y, x, 0, 1, Piece.Name.KING, color)) return false;
+        if (!shortStop(y, x, 0, -1, Piece.Name.KING, color)) return false;
+        if (color || mirrors) {
+            if (!shortStop(y, x, -1, 1, Piece.Name.PAWN, color)) return false;
+            if (!shortStop(y, x, -1, -1,  Piece.Name.PAWN, color)) return false;
+        } else {
+            if (!shortStop(y, x, 1, 1,  Piece.Name.PAWN, false)) return false;
+            if (!shortStop(y, x, 1, -1,  Piece.Name.PAWN, false)) return false;
+        }
+        if (!shortStop(y, x, 2, 1, Piece.Name.KNIGHT, color)) return false;
+        if (!shortStop(y, x, 2, -1, Piece.Name.KNIGHT, color)) return false;
+        if (!shortStop(y, x, -2, 1, Piece.Name.KNIGHT, color)) return false;
+        if (!shortStop(y, x, -2, -1, Piece.Name.KNIGHT, color)) return false;
+        if (!shortStop(y, x, 1, -2, Piece.Name.KNIGHT, color)) return false;
+        if (!shortStop(y, x, 1, 2, Piece.Name.KNIGHT, color)) return false;
+        if (!shortStop(y, x, -1, -2, Piece.Name.KNIGHT, color)) return false;
+        return shortStop(y, x, -1, 2, Piece.Name.KNIGHT, color);
     }
 
 
-    static boolean shortStop(int y, int x, int y1, int x1, String p, boolean color) { //шаблон для проверки коротких атак
+    static boolean shortStop(int y, int x, int y1, int x1, Piece.Name p, boolean color) { //шаблон для проверки коротких атак
         int i = 1;
         return !include(y + i * y1, x + i * x1) || empty(y + i * y1, x + i * x1)
                 || color == pieces[y + i * y1][x + i * x1].colour || !pieces[y + i * y1][x + i * x1].name.equals(p);
     }
 
 
-    static boolean stop(int y, int x, int y1, int x1, String p, boolean color) { //шаблон для проверки длинных атак
+    static boolean stop(int y, int x, int y1, int x1, Piece.Name p, boolean color) { //шаблон для проверки длинных атак
         for (int i = 1; i <= 7; i++) { // y+
             if (!include(y + i * y1, x + i * x1)) break;
             if (!empty(y + i * y1, x + i * x1)) {
                 if(color != pieces[y + i * y1][x + i * x1].colour) {
-                    return (!pieces[y + i * y1][x + i * x1].name.equals(p)
-                            && !pieces[y + i * y1][x + i * x1].name.equals("queen"));
+                    return (pieces[y + i * y1][x + i * x1].name.equals(p)
+                            || pieces[y + i * y1][x + i * x1].name.equals(Piece.Name.QUEEN));
                 }
             }
         }
-        return true;
+        return false;
     }
 
     static boolean empty(int y, int x) { //наличие фигуры
