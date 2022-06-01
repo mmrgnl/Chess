@@ -141,7 +141,7 @@ public class Logic {
             if (include(y - 1, x - 1)) {
                 if (pieces[y - 1][x - 1] != null && checkShah(y, x, y - 1, x - 1)
                         && pieces[y - 1][x - 1].colour != pieces[y][x].colour)
-                    ChessBoard.paintRed(y - 1, x - 1);
+                     ChessBoard.paintRed(y - 1, x - 1);
             }
             if (include(y - 1, x + 1)) {
                 if (pieces[y - 1][x + 1] != null && checkShah(y, x, y - 1, x + 1)
