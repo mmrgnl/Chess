@@ -119,9 +119,9 @@ public class ChessBoard extends JFrame {
     static void mirror() { //разворот доски
         for (int y = 4; y < 8; y++) {
             for (int x = 0; x < 8; x++) {
-                ImageIcon temp = (ImageIcon) ChessBoard.buttons[y][x].getIcon();
-                ChessBoard.buttons[y][x].setIcon(ChessBoard.buttons[7 - y][x].getIcon());
-                ChessBoard.buttons[7 - y][x].setIcon(temp);
+                ImageIcon temp = (ImageIcon) buttons[y][x].getIcon();
+                buttons[y][x].setIcon(ChessBoard.buttons[7 - y][x].getIcon());
+                buttons[7 - y][x].setIcon(temp);
                 Piece tempP = Logic.pieces[y][x];
                 Logic.pieces[y][x] = Logic.pieces[7 - y][x];
                 Logic.pieces[7 - y][x] = tempP;
@@ -134,7 +134,7 @@ public class ChessBoard extends JFrame {
     static void clearDots() { //удаление кругов хода
         for (int y = 0; y < 8; y++) {
             for (int x = 0; x < 8; x++) {
-                if (ChessBoard.buttons[y][x].getIcon() == ChessBoard.dot) ChessBoard.buttons[y][x].setIcon(null);
+                if (buttons[y][x].getIcon() == dot) buttons[y][x].setIcon(null);
             }
         }
     }
@@ -145,17 +145,22 @@ public class ChessBoard extends JFrame {
             t = !t;
             for (int x = 0; x < 8; x++) {
                 if (t) {
-                    if (x % 2 == 0) ChessBoard.buttons[y][x].setBackground(Color.pink);
-                    else ChessBoard.buttons[y][x].setBackground(Color.white);
+                    if (x % 2 == 0) buttons[y][x].setBackground(Color.pink);
+                    else buttons[y][x].setBackground(Color.white);
                 } else {
-                    if (x % 2 == 0) ChessBoard.buttons[y][x].setBackground(Color.white);
-                    else ChessBoard.buttons[y][x].setBackground(Color.pink);
+                    if (x % 2 == 0) buttons[y][x].setBackground(Color.white);
+                    else buttons[y][x].setBackground(Color.pink);
                 }
             }
         }
-
-
     }
 
+    static void addDot(int y, int x) {
+        buttons[y][x].setIcon(dot);
+    }
+
+    static void paintRed(int y, int x){
+        buttons[y][x].setBackground(Color.red);
+    }
 
 }

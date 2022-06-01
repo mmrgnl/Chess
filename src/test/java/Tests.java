@@ -50,7 +50,7 @@ public class Tests {
 
     void endGameTest() {
 
-        Logic.mirrors = false;
+
         Logic.FEN("1nbqk1nr/2p3r1/8/2p5/1p6/p2b4/8/7K");
         ChessBoard.startGame();
         assertTrue(Logic.endGame());

@@ -1,6 +1,5 @@
 import javax.swing.*;
 
-
 public class Piece {
 
     enum Name {
@@ -11,7 +10,6 @@ public class Piece {
         QUEEN,
         KING
     }
-
 
     Boolean colour; //t = white, f = black
     Boolean fistMove;

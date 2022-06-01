@@ -10,6 +10,9 @@ public class Logic {
     static boolean colour = true;//t = white, f = black
     static Piece[][] pieces = new Piece[8][8];
     static boolean mirrors;
+    static boolean enPassant = false;
+    static int enPassantY;
+    static int enPassantX;
 
     static void FEN(String s) { //обработка кода расположения фигур
         int y = 0;
@@ -24,11 +27,11 @@ public class Logic {
                                 new ImageIcon("pawnB.png"));
                         case ('r') -> pieces[y][x1] = new Piece(Piece.Name.ROOK, false, true,
                                 new ImageIcon("rookB.png"));
-                        case ('n') -> pieces[y][x1] = new Piece(Piece.Name.KNIGHT, false, null,
+                        case ('n') -> pieces[y][x1] = new Piece(Piece.Name.KNIGHT, false, false,
                                 new ImageIcon("knightB.png"));
-                        case ('b') -> pieces[y][x1] = new Piece(Piece.Name.BISHOP, false, null,
+                        case ('b') -> pieces[y][x1] = new Piece(Piece.Name.BISHOP, false, false,
                                 new ImageIcon("bishopB.png"));
-                        case ('q') -> pieces[y][x1] = new Piece(Piece.Name.QUEEN, false, null,
+                        case ('q') -> pieces[y][x1] = new Piece(Piece.Name.QUEEN, false, false,
                                 new ImageIcon("queenB.png"));
                         case ('k') -> {
                             pieces[y][x1] = new Piece(Piece.Name.KING, false, true,
@@ -40,11 +43,11 @@ public class Logic {
                                 new ImageIcon("pawnW.png"));
                         case ('R') -> pieces[y][x1] = new Piece(Piece.Name.ROOK, true, true,
                                 new ImageIcon("rookW.png"));
-                        case ('N') -> pieces[y][x1] = new Piece(Piece.Name.KNIGHT, true, null,
+                        case ('N') -> pieces[y][x1] = new Piece(Piece.Name.KNIGHT, true, false,
                                 new ImageIcon("knightW.png"));
-                        case ('B') -> pieces[y][x1] = new Piece(Piece.Name.BISHOP, true, null,
+                        case ('B') -> pieces[y][x1] = new Piece(Piece.Name.BISHOP, true, false,
                                 new ImageIcon("bishopW.png"));
-                        case ('Q') -> pieces[y][x1] = new Piece(Piece.Name.QUEEN, true, null,
+                        case ('Q') -> pieces[y][x1] = new Piece(Piece.Name.QUEEN, true, false,
                                 new ImageIcon("queenW.png"));
                         case ('K') -> {
                             pieces[y][x1] = new Piece(Piece.Name.KING, true, true,
@@ -72,7 +75,9 @@ public class Logic {
     static int moveX;
 
     static void actionMove(int y, int x) {
-        if (ChessBoard.buttons[y][x].getBackground() == Color.red || ( ChessBoard.buttons[y][x].getIcon() == ChessBoard.dot)) {
+
+        if (ChessBoard.buttons[y][x].getBackground() == Color.red
+                || (ChessBoard.buttons[y][x].getIcon() == ChessBoard.dot )) {
             move(moveY, moveX, y, x);
         }
         if (ChessBoard.buttons[y][x].getIcon() != ChessBoard.dot) {
@@ -111,7 +116,8 @@ public class Logic {
 
         for (int y = 0; y < 8; y++) {
             for (int x = 0; x < 8; x++) {
-                if (ChessBoard.buttons[y][x].getIcon() == ChessBoard.dot || ChessBoard.buttons[y][x].getBackground() == Color.red) {
+                if (ChessBoard.buttons[y][x].getIcon() == ChessBoard.dot
+                        || ChessBoard.buttons[y][x].getBackground() == Color.red) {
                     ChessBoard.defColours();
                     ChessBoard.clearDots();
                     return false;
@@ -125,45 +131,53 @@ public class Logic {
 
 
     static void pawnMove(int y, int x) { //просчет атаки пешки
-
         if (colour || mirrors) {
-
+            if (enPassant && y == enPassantY && x + 1 == enPassantX) {
+                if (empty(y - 1, x + 1)) ChessBoard.addDot(y - 1, x + 1);
+            }
+            if (enPassant && y == enPassantY && x - 1 == enPassantX) {
+                if (empty(y - 1, x - 1))  ChessBoard.addDot(y - 1, x - 1);
+            }
             if (include(y - 1, x - 1)) {
                 if (pieces[y - 1][x - 1] != null && checkShah(y, x, y - 1, x - 1)
                         && pieces[y - 1][x - 1].colour != pieces[y][x].colour)
-                    ChessBoard.buttons[y - 1][x - 1].setBackground(Color.red);
-
+                    ChessBoard.paintRed(y - 1, x - 1);
             }
             if (include(y - 1, x + 1)) {
                 if (pieces[y - 1][x + 1] != null && checkShah(y, x, y - 1, x + 1)
                         && pieces[y - 1][x + 1].colour != pieces[y][x].colour)
-                    ChessBoard.buttons[y - 1][x + 1].setBackground(Color.red);
+                    ChessBoard.paintRed(y - 1, x + 1);
             }
-            if (include(y - 1, x) && (empty(y - 1, x)) && checkShah(y, x, y - 1, x)) ChessBoard.buttons[y - 1][x].setIcon(ChessBoard.dot);
-            if (pieces[y][x].fistMove && include(y - 2, x) && (empty(y - 2, x)) && checkShah(y, x, y - 2, x))
-                ChessBoard.buttons[y - 2][x].setIcon(ChessBoard.dot);
+            if (include(y - 1, x) && (empty(y - 1, x)) && checkShah(y, x, y - 1, x))
+                ChessBoard.addDot(y - 1, x);
+
+            if (pieces[y][x].fistMove && include(y - 2, x) && (empty(y - 2, x)) && checkShah(y, x, y - 2, x)) {
+                ChessBoard.addDot(y - 2, x);
+            }
 
         } else {
-
+            if (enPassant && y == enPassantY && x + 1 == enPassantX) {
+                if (empty(y + 1, x + 1)) ChessBoard.addDot(y + 1, x + 1);
+            }
+            if (enPassant && y == enPassantY && x - 1 == enPassantX) {
+                if (empty(y + 1, x - 1)) ChessBoard.addDot(y + 1, x - 1);
+            }
             if (include(y + 1, x + 1)) {
                 if (pieces[y + 1][x + 1] != null && checkShah(y, x, y + 1, x + 1)
                         && pieces[y + 1][x + 1].colour != pieces[y][x].colour)
-                    ChessBoard.buttons[y + 1][x + 1].setBackground(Color.red);
-
+                    ChessBoard.paintRed(y + 1, x + 1);
             }
             if (include(y + 1, x - 1)) {
                 if (pieces[y + 1][x - 1] != null && checkShah(y, x, y + 1, x - 1)
                         && pieces[y + 1][x - 1].colour != pieces[y][x].colour)
-                    ChessBoard.buttons[y + 1][x - 1].setBackground(Color.red);
+                    ChessBoard.paintRed(y + 1, x - 1);
             }
-            if (include(y + 1, x) && (empty(y + 1, x)) && checkShah(y, x, y + 1, x)) ChessBoard.buttons[y + 1][x].setIcon(ChessBoard.dot);
-
-            if (pieces[y][x].fistMove && include(y + 2, x) && (empty(y + 2, x)) && checkShah(y, x, y + 2, x))
-                ChessBoard.buttons[y + 2][x].setIcon(ChessBoard.dot);
-
+            if (include(y + 1, x) && (empty(y + 1, x)) && checkShah(y, x, y + 1, x))
+                ChessBoard.addDot(y + 1, x);
+            if (pieces[y][x].fistMove && include(y + 2, x) && (empty(y + 2, x)) && checkShah(y, x, y + 2, x)) {
+                ChessBoard.addDot(y + 2, x);
+            }
         }
-
-
     }
 
 
@@ -197,17 +211,14 @@ public class Logic {
 
 
     static void CheckKnight(int y, int x, int y1, int x1) { //шаблон атаки коня
-
-
-
         if (include(y + y1, x + x1) && empty(y + y1, x + x1) && checkShah(y, x, y + y1, x + x1)) {
-            ChessBoard.buttons[y + y1][x + x1].setIcon(ChessBoard.dot);
+            ChessBoard.addDot(y + y1, x + x1);
 
 
         }
         if (include(y + y1, x + x1) && attackReady(y, x, y + y1, x + x1)
                 && checkShah(y, x, y + y1, x + x1))
-            ChessBoard.buttons[y + y1][x + x1].setBackground(Color.red);
+            ChessBoard.paintRed(y + y1, x + x1);
 
     }
 
@@ -223,20 +234,36 @@ public class Logic {
     }
 
     static void move(int moveY, int moveX, int y, int x) { //смена хода
+        if (enPassant && pieces[moveY][moveX].name.equals(Piece.Name.PAWN)) {
+            if ((colour || mirrors) && include(y + 1, x) && !empty(y + 1, x)
+                    && (y + 1 == enPassantY && x == enPassantX)) {
 
-        if (pieces[moveY][moveX].name.equals(Piece.Name.KING)) {
+                if (pieces[y + 1][x].name.equals(Piece.Name.PAWN) && pieces[y + 1][x].colour != colour){
+                    pieces[y + 1][x] = null;
+                    ChessBoard.buttons[y + 1][x].setIcon(null);
+                }
+
+        } else {
+                if (include(y - 1, x)&& (y - 1 == enPassantY && x == enPassantX) && !empty(y - 1, x)
+                        && pieces[y - 1][x].name.equals(Piece.Name.PAWN)
+                        && pieces[y - 1][x].colour) {
+                    pieces[y - 1][x] = null;
+                    ChessBoard.buttons[y - 1][x].setIcon(null);
+                }
+            }
+        }
+        if (pieces[moveY][moveX].name.equals(Piece.Name.KING)) { //рокировка
             if (x == moveX + 2) {
-                pieces[7][5] = pieces[7][7];
-                ChessBoard.buttons[7][5].setIcon(pieces[7][5].pieceIcon);
-                pieces[7][7] = null;
-                ChessBoard.buttons[7][7].setIcon(null);
-
+                pieces[y][moveX + 1] = pieces[y][moveX+3];
+                ChessBoard.buttons[7][moveX + 1].setIcon(pieces[y][moveX + 1].pieceIcon);
+                pieces[y][moveX + 3] = null;
+                ChessBoard.buttons[y][moveX + 3].setIcon(null);
             }
             if (x == moveX - 2) {
-                pieces[7][3] = pieces[7][0];
-                ChessBoard.buttons[7][3].setIcon(pieces[7][3].pieceIcon);
-                pieces[7][0] = null;
-                ChessBoard.buttons[7][0].setIcon(null);
+                pieces[y][moveX - 1] = pieces[y][moveX - 4];
+                ChessBoard.buttons[y][moveX - 1].setIcon(pieces[y][moveX - 1].pieceIcon);
+                pieces[y][moveX - 4] = null;
+                ChessBoard.buttons[y][moveX - 4].setIcon(null);
             }
             if (colour) {
                 wKingY = y;
@@ -250,12 +277,20 @@ public class Logic {
         ChessBoard.buttons[y][x].setIcon(pieces[moveY][moveX].pieceIcon);
         pieces[y][x] = pieces[moveY][moveX];
         pieces[moveY][moveX] = null;
-        if (pieces[y][x].fistMove != null) pieces[y][x].fistMove = false;
-        if (pieces[y][x].name.equals(Piece.Name.PAWN) && y == 0) {
+        if (pieces[y][x].fistMove && pieces[y][x].name == Piece.Name.PAWN && y - moveY == 2 || moveY - y == 2) {
+            enPassant = true;
+                if (mirrors) enPassantY = 7 - y;
+                else enPassantY = y;
+            enPassantX = x;
+        }
+        else enPassant = false;
+        if (pieces[y][x].fistMove) pieces[y][x].fistMove = false;
+        if (((mirrors || colour) && pieces[y][x].name.equals(Piece.Name.PAWN) && y == 0) || (!colour
+                && pieces[y][x].name.equals(Piece.Name.PAWN) && y == 7)) {
             if (pieces[y][x].colour) {
-                pieces[y][x] = new Piece(Piece.Name.QUEEN, true, null, new ImageIcon("queenW.png"));
+                pieces[y][x] = new Piece(Piece.Name.QUEEN, true,false, new ImageIcon("queenW.png"));
             } else {
-                pieces[y][x] = new Piece(Piece.Name.QUEEN, false, null, new ImageIcon("queenB.png"));
+                pieces[y][x] = new Piece(Piece.Name.QUEEN, false,false, new ImageIcon("queenB.png"));
             }
             ChessBoard.buttons[y][x].setIcon((pieces[y][x].pieceIcon));
         }
@@ -271,6 +306,7 @@ public class Logic {
         if (endGame()) {
             if (colour) System.out.println("Black wins");
             else System.out.println("White wins");
+
         }
 
     }
@@ -301,11 +337,11 @@ public class Logic {
         for (int i = 1; i <= 7; i++) {
             if (!include(y + i * y1, x + i * x1)) break;
             if ((empty(y + i * y1, x + i * x1)) && checkShah(y, x, y + i * y1, x + i * x1))
-                ChessBoard.buttons[y + i * y1][x + i * x1].setIcon(ChessBoard.dot);
+                ChessBoard.addDot(y + i * y1, x + i * x1);
             else {
                 if (pieces[y + i * y1][x + i * x1] != null && checkShah(y, x, y + i * y1, x + i * x1)
                         && pieces[y + i * y1][x + i * x1].colour != pieces[y][x].colour)
-                    ChessBoard.buttons[y + i * y1][x + i * x1].setBackground(Color.red);
+                    ChessBoard.paintRed(y + i * y1, x + i * x1);
                 break;
             }
         }
@@ -317,25 +353,25 @@ public class Logic {
         int i = 1;
         if (include(y + i * y1, x + i * x1)) {
             if ((empty(y + i * y1, x + i * x1)) && checkKing(y + i * y1, x + i * x1, color))
-                ChessBoard.buttons[y + i * y1][x + i * x1].setIcon(ChessBoard.dot);
+                ChessBoard.addDot(y + i * y1, x + i * x1);
             else {
                 if (!empty(y + i * y1, x + i * x1) && pieces[y + i * y1][x + i * x1].colour != pieces[y][x].colour
                         && checkKing(y + i * y1, x + i * x1, color))
-                    ChessBoard.buttons[y + i * y1][x + i * x1].setBackground(Color.red);
+                    ChessBoard.paintRed(y + i * y1, x + i * x1);
             }
         }
     }
 
 
     static void kingMove(int y, int x) { //обработка хода короля
-        if (pieces[y][x].fistMove && !empty(7, 0) && empty(7, 1) && empty(7, 3)
-                && pieces[7][0].name.equals(Piece.Name.ROOK)
-                && pieces[7][0].fistMove) { //обработка рокировки
+        if (pieces[y][x].fistMove && !empty(y, 0) && empty(y, 1) && empty(y, 3)
+                && pieces[y][0].name.equals(Piece.Name.ROOK)
+                && pieces[y][0].fistMove) { //обработка рокировки
             kingCheckMove(y, x, 0, -2, colour);
         }
 
-        if (pieces[y][x].fistMove && !empty(7, 7) && empty(7, 6) && pieces[7][7].name.equals(Piece.Name.ROOK)
-                && pieces[7][7].fistMove) {
+        if (pieces[y][x].fistMove && !empty(y, 7) && empty(y, 6) && pieces[y][7].name.equals(Piece.Name.ROOK)
+                && pieces[y][7].fistMove) {
             kingCheckMove(y, x, 0, +2, colour);
         }
         kingCheckMove(y, x, 1, 0, colour);
@@ -346,9 +382,7 @@ public class Logic {
         kingCheckMove(y, x, 1, -1, colour);
         kingCheckMove(y, x, -1, 1, colour);
         kingCheckMove(y, x, -1, -1, colour);
-
     }
-
 
     static boolean checkKing(int y, int x, boolean color) { //проверка на шах
         if (stop(y, x, 1, 1, Piece.Name.BISHOP, color)) return false;
@@ -397,6 +431,9 @@ public class Logic {
         for (int i = 1; i <= 7; i++) { // y+
             if (!include(y + i * y1, x + i * x1)) break;
             if (!empty(y + i * y1, x + i * x1)) {
+
+                if (color == pieces[y + i * y1][x + i * x1].colour
+                        && pieces[y + i * y1][x + i * x1].name != Piece.Name.KING) return false;
                 if(color != pieces[y + i * y1][x + i * x1].colour) {
                     return (pieces[y + i * y1][x + i * x1].name.equals(p)
                             || pieces[y + i * y1][x + i * x1].name.equals(Piece.Name.QUEEN));
