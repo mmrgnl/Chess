@@ -13,7 +13,6 @@ public class ChessBoard extends JFrame {
     static JLabel label = new JLabel("...");
 
     public ChessBoard() {
-
         JFrame choseFrame = new JFrame(); //панель для получения кода расположения фигур
         JLabel enterTheFen =  new JLabel("Enter the FEN");
         JButton submitFEN = new JButton("Submit");
@@ -21,7 +20,7 @@ public class ChessBoard extends JFrame {
         textFEN.setHorizontalAlignment(JTextField.CENTER);
         JCheckBox checkBox = new JCheckBox();
         checkBox.setText("Mirror");
-        submitFEN.addActionListener(e -> { //для стандартной расстановки rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
+        submitFEN.addActionListener(e -> {
             Logic.FEN(textFEN.getText());
             if (textFEN.getText().equals("")) Logic.FEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
             startGame();
@@ -47,7 +46,6 @@ public class ChessBoard extends JFrame {
 
 
     static void startGame() { //создание окна игры, расстановка фигур
-
         JFrame chessBoard = new JFrame();
         chessBoard.setSize(1000, 1000);
         chessBoard.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

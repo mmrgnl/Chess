@@ -148,13 +148,11 @@ public class Logic {
                         && pieces[y - 1][x + 1].colour != pieces[y][x].colour)
                     ChessBoard.paintRed(y - 1, x + 1);
             }
-            if (include(y - 1, x) && (empty(y - 1, x)) && checkShah(y, x, y - 1, x))
+            if (include(y - 1, x) && (empty(y - 1, x)) && checkShah(y, x, y - 1, x)) {
                 ChessBoard.addDot(y - 1, x);
-
-            if (pieces[y][x].fistMove && include(y - 2, x) && (empty(y - 2, x)) && checkShah(y, x, y - 2, x)) {
-                ChessBoard.addDot(y - 2, x);
+                if (pieces[y][x].fistMove && include(y - 2, x) && (empty(y - 2, x)) && checkShah(y, x, y - 2, x))
+                    ChessBoard.addDot(y - 2, x);
             }
-
         } else {
             if (enPassant && y == enPassantY && x + 1 == enPassantX) {
                 if (empty(y + 1, x + 1)) ChessBoard.addDot(y + 1, x + 1);
@@ -172,10 +170,11 @@ public class Logic {
                         && pieces[y + 1][x - 1].colour != pieces[y][x].colour)
                     ChessBoard.paintRed(y + 1, x - 1);
             }
-            if (include(y + 1, x) && (empty(y + 1, x)) && checkShah(y, x, y + 1, x))
+            if (include(y + 1, x) && (empty(y + 1, x)) && checkShah(y, x, y + 1, x)) {
                 ChessBoard.addDot(y + 1, x);
-            if (pieces[y][x].fistMove && include(y + 2, x) && (empty(y + 2, x)) && checkShah(y, x, y + 2, x)) {
-                ChessBoard.addDot(y + 2, x);
+                if (pieces[y][x].fistMove && include(y + 2, x) && (empty(y + 2, x)) && checkShah(y, x, y + 2, x)) {
+                    ChessBoard.addDot(y + 2, x);
+                }
             }
         }
     }
